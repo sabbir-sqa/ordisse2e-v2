@@ -1,0 +1,33 @@
+{
+  "name": "ordisse2e-v2",
+  "version": "1.0.0",
+  "description": "New Playwright frameword for ORDISS",
+  "main": "index.js",
+  "scripts": {
+    "test": "dotenv -e .env -- npx playwright test",
+    "test:local": "dotenv -e .env.local -- npx playwright test",
+    "test:dev": "dotenv -e .env.dev -- npx playwright test",
+    "test:staging": "dotenv -e .env.staging -- npx playwright test",
+    "test:ui": "dotenv -e .env -- npx playwright test --ui",
+    "test:debug": "dotenv -e .env -- npx playwright test --debug",
+    "report": "npx playwright show-report",
+    "codegen": "npx playwright codegen --ignore-https-errors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabbir-sqa/ordisse2e-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sabbir-sqa/ordisse2e-v2/issues"
+  },
+  "homepage": "https://github.com/sabbir-sqa/ordisse2e-v2#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.3",
+    "dotenv-cli": "^11.0.0"
+  }
+}
