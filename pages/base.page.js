@@ -4,6 +4,7 @@ class BasePage {
     this.page = page;
   }
 
+  // Common navigation
   async navigate(path = '') {
     await this.page.goto(path);
     // Optional: Wait for main content or loader to disappear
@@ -15,20 +16,24 @@ class BasePage {
     await this.page.getByRole('button', { name: text, exact: true }).click();
   }
 
+  // Form interactions
   async fillField(label, value) {
     // Prefer getBylabel -> accessibility + stability
     await this.page.getByLabel(label, { exact: true }).fill(value);
   }
 
+  // Select dropdown option by visible text
   async selectOption(label, optionText) {
     const select = this.page.getByLabel(label, { exact: true });
     await select.selectOption({ label: optionText });
   }
 
+  // Assertions
   async expectToBeVisible(text) {
     await this.page.getByText(text, { exact: true }).toBeVisible();
   }
 
+  // Wait for success toast notification
   async waitForSuccessToast(timeout = 5000) {
     // Adjust selector based on ORDISS toast style
     const toast = this.page.locator(
