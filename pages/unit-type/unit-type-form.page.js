@@ -73,11 +73,13 @@ class UnitTypeFormPage extends BasePage {
 
     // Corps multi-select
     if (data['Corps']) {
+      // Check if Corps data is provided
       const corpsList = data['Corps']
         .split(',') // Split by comma
         .map((c) => c.trim()) // Trim whitespace
         .filter((c) => c); // Remove empty strings
 
+      // Iterate over each corps
       for (const corps of corpsList) {
         await this.corpsSelect.click();
         await this.corpsSelect.fill(corps);

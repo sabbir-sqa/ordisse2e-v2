@@ -1,64 +1,30 @@
-//playwright.config.js
-const fs = require('fs');
-const path = require('path');
-const { defineConfig, devices } = require('@playwright/test');
-const { trace } = require('console');
-
-//Load env - fallback if dotenv is not used directly
+// playwright.config.js
 require('dotenv').config();
-
-const baseURL = process.env.BASE_URL || 'http://localhost:4200';
-const headless = process.env.HEADLESS !== 'false';
-const timeout = parseInt(process.env.TIMEOUT) || 60_000;
-
-// Ensure auth directory exists
-const authDir = path.join(__dirname, 'playwright/.auth');
-if (!fs.existsSync(authDir)) {
-  fs.mkdirSync(authDir, { recursive: true });
-}
 
 module.exports = {
   testDir: './tests',
-  timeout: timeout,
-  retries: parseInt(process.env.RETRIES) || 2,
-  workers: process.env.WORKERS || '50%', //Smart parallelism
-  reporter: [
-    ['html', { outputFolder: 'reports/html', open: 'never' }],
-    ['json', { outputFolder: 'reports/test-results.json' }],
-    //Later: ['allure-playwright'] - We'll add Allure soon
-  ],
-  use: {
-    baseURL: baseURL,
-    headless: headless,
-    viewport: { width: 1280, height: 720 },
-    ignoreHttpsErrors: true, // Critical for internal SSL/self-signed
-    screenshot: process.env.SCREENSHOT_MODE || 'only-on-failure',
-    video: process.env.VIDEO_MODE || 'retain-on-failure',
-    trace: 'on-first-retry', // Great for CI debugging
+  timeout: parseInt(process.env.TIMEOUT) || 60000, // Default timeout for each test | can be overridden by TIMEOUT env variable
+  retries: parseInt(process.env.RETRIES) || 0, // Reduced retries for faster feedback | set to 0 for debugging
+  workers: parseInt(process.env.WORKERS) || 1, // Number of parallel workers for test execution | set to 1 for debugging
 
-    // Reuse auth state from setup
-    storageState: './playwright/.auth/user.json',
+  // Global setup - runs once before all tests
+  globalSetup: require.resolve('./tests/setup/global-setup.js'), // handles shared auth caching
+
+  use: {
+    baseURL: process.env.BASE_URL || 'https://192.168.10.30:700', // Default base URL
+    headless: process.env.HEADLESS === 'false', // Run tests in headless mode based on env variable | default: false
+    screenshot: process.env.SCREENSHOT_MODE || 'only-on-failure', // Capture screenshots on failure | 'on', 'off', 'only-on-failure'
+    video: process.env.VIDEO_MODE || 'retain-on-failure', // Record videos on failure
+    trace: 'on-first-retry', // Collect trace on first retry | 'retain-on-failure'
+    ignoreHTTPSErrors: true, // Ignore HTTPS errors for self-signed certificates | useful for local testing
+    // Use saved auth state for all tests
+    storageState: 'playwright/.auth/user.json',
   },
 
-  /* Projects: Setup runs once, others depend on it */
-  projects: [
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.js/, //Only run setup files
-      use: {
-        storageState: undefined, //No auth reuse for setup
-      },
-    },
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
-    },
-    // Add later: firefox, webkit, mobile, etc.
+  reporter: [
+    ['html', { outputFolder: process.env.REPORT_PATH || 'reports/html' }],
+    ['list'],
   ],
 
-  // Folder where output (traces, videos, screenshots) will be saved
-  outputDir: 'test-results/',
+  outputDir: './reports/test-results',
 };
-
-const { devices } = require('@playwright/test');
