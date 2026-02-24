@@ -39,7 +39,8 @@ async function globalSetup() {
   const page = await context.newPage();
 
   try {
-    const baseUrl = process.env.BASE_URL || 'https://192.168.10.30:700';
+    const baseUrl =
+      process.env.BASE_URL || 'https://main.ordiss.dev.thinkventory.com';
     const username = process.env.SUPERADMIN_USERNAME || 'main.superadmin';
     const password = process.env.SUPERADMIN_PASSWORD || 'Ordiss@SA';
 

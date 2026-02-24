@@ -29,7 +29,9 @@ class BasePage {
   constructor(page) {
     this.page = page;
     // Get baseURL from Playwright config via page context
-    this.baseUrl = page.context()._options.baseURL || 'https://10.10.10.10:700';
+    this.baseUrl =
+      page.context()._options.baseURL ||
+      'https://main.ordiss.dev.thinkventory.com';
     this.defaultTimeout = 10000; // 10 seconds
     this.shortTimeout = 3000; // 3 seconds
   }

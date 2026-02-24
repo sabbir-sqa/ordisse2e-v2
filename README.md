@@ -1,101 +1,102 @@
 # ORDISS E2E Test Automation
 
-Modern Playwright automation framework for ORDISS application testing.
+Comprehensive end-to-end test framework for the ORDISS web application. The project uses Playwright and follows the Page Object Model (POM) to keep tests maintainable and resilient.
 
-##  Quick Start
+**This README** provides the full context any developer or AI agent needs to run, extend, and maintain the test suite.
 
-\\\ash
-# 1. Install
+**Quick links**
+
+- [package.json](package.json)
+- [playwright.config.js](playwright.config.js)
+- [tests/setup/global-setup.js](tests/setup/global-setup.js)
+- [pages/](pages)
+- [tests/](tests)
+- [utils/](utils)
+
+**Prerequisites**
+
+- Node.js 16+ and npm
+- Network access to `BASE_URL` (configured via environment)
+
+Environment variables (most used)
+
+- `BASE_URL` — application URL (e.g. https://main.ordiss.dev.thinkventory.com)
+- `VALID_USERNAME`, `VALID_PASSWORD` — credentials used in tests
+- `SUPERADMIN_USERNAME`, `SUPERADMIN_PASSWORD` — used by global setup
+- `TIMEOUT`, `RETRIES`, `WORKERS` — Playwright numeric overrides
+- `HEADLESS` — set to `false` to run tests with visible browsers
+- `SCREENSHOT_MODE`, `VIDEO_MODE`, `REPORT_PATH`
+
+Install
+
+```bash
 npm install
+```
 
-# 2. Configure
-cp .env.example .env
-# Edit .env: BASE_URL, credentials
+Run examples
 
-# 3. Run
-npm test                    # All tests (headless)
-npm run test:headed        # With browser visible
-npm run report             # View results
-\\\
+```bash
+npm test                # headless
+npm run test:headed    # run with visible browser
+npm run test:ui        # Playwright interactive UI
+npm run report         # open last HTML report
+```
 
-**Time**: 30-40 min first run | 5-10 min subsequent
+Project layout
 
-##  Documentation
+- `pages/` — Page objects (POM). Core base behaviors in `pages/base.page.js`.
+- `tests/` — Test specs. Global setup in `tests/setup/global-setup.js` (one-time auth caching).
+- `utils/` — helpers (`csv-reader.js`, `form-helper.js`, etc.).
+- `test-data/` — CSV and fixture files used by data-driven tests.
+- `playwright.config.js` — configuration, reporters, `storageState`.
 
-| Document | Content |
-|----------|---------|
-| [docs/SETUP.md](./docs/SETUP.md) | Complete setup & guide |
-| [docs/REFERENCE.md](./docs/REFERENCE.md) | Commands & troubleshooting |
-| [DOCS_ARCHIVE.md](./DOCS_ARCHIVE.md) | Archived detailed docs |
+Core patterns & conventions
 
-##  Project Structure
+- Page objects: extend `pages/base.page.js` and export with `module.exports = ClassName`.
+- Tests: use CommonJS `require()` and Playwright's `test`/`expect` APIs.
+- Selectors: prefer `getByRole`, `getByLabel`, and semantic locators to reduce flakiness.
+- Error handling: use `withErrorHandling()` in `pages/base.page.js` to auto-capture screenshots.
 
-\\\
-pages/                Page Objects (POM)
-tests/                Test Specifications
-utils/                Utility Functions
-test-data/            Test Data
-docs/                 Documentation
-\\\
+Global authentication
 
-##  Key Features
+- `tests/setup/global-setup.js` logs in once and saves `playwright/.auth/user.json`. The file is reused for subsequent runs (refreshed if older than 1 hour).
 
- Page Object Model (POM)  
- Semantic Locators (resilient)  
- One-time Authentication (10-15x faster)  
- Smart Waits (not hard timeouts)  
- Environment Configuration  
- Error Handling & Screenshots  
- HTML Reporting  
+How to add a feature test (developer / AI agent checklist)
 
-##  Test Suite
+1. Add test data to `test-data/` (CSV/JSON) if needed.
+2. Add or update a `pages/<feature>/...` page object that extends `pages/base.page.js`.
+3. Create a spec in `tests/<feature>/...` following existing patterns.
+4. Run the spec locally, iterate until stable.
+5. Commit and open a PR with test run evidence.
 
-| Test | Status |
-|------|--------|
-| Login |  Complete |
-| Unit Type CRUD |  Complete |
-| Others |  Placeholder |
+AI agent execution guidance
 
-##  Commands
+- Steps an agent should follow to implement tests or changes:
+  - run `npm install` and `npm test` to establish baseline health
+  - add page object and spec following POM & naming conventions
+  - add test-data files when tests are data-driven
+  - run focused tests and then the suite to confirm stability
+  - provide a short changelog and test report with the PR
 
-\\\ash
-npm test                    # Run all tests
-npm run test:headed        # With browser
-npm run test:debug         # With debugger
-npm run test:ui            # Interactive UI
-npm run report             # View report
+Troubleshooting
 
-# Environment-specific
-npm run test:local         # Localhost
-npm run test:dev           # Dev server
-npm run test:staging       # Staging
-\\\
+- To force re-authentication, remove `playwright/.auth/user.json` and re-run tests:
 
-##  Troubleshooting
+```bash
+rm -f playwright/.auth/user.json
+npm test
+```
 
-**Connection timeout?**
-\\\ash
-ping 192.168.10.30
-curl -k https://192.168.10.30:700
-\\\
+- If HTTPS certs block navigation, `ignoreHTTPSErrors: true` is set in config.
 
-**Auth issues?**
-\\\ash
-rm playwright/.auth/user.json
-npm test  # Will re-authenticate
-\\\
+Security
 
-**Slow tests?**
-Edit \.env\: \WORKERS=8\
+- Never commit credentials. Use CI secret stores and environment variables.
 
-See [docs/REFERENCE.md](./docs/REFERENCE.md) for complete troubleshooting.
+Next actions I can take for you
 
-##  Learn More
+- Archive old docs into `docs/ARCHIVE/` and preserve them (recommended).
+- Run the full test suite and collect the HTML report.
+- Add a CONTRIBUTING.md or developer guide extracted from archived docs.
 
-- [Complete Setup Guide](./docs/SETUP.md)
-- [Command Reference](./docs/REFERENCE.md)
-- [Playwright Docs](https://playwright.dev)
-
----
-
-**Framework**: Playwright 1.48.0 | **Status**:  Production Ready
+Framework: Playwright 1.48.0

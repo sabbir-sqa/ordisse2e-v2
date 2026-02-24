@@ -11,7 +11,7 @@ module.exports = {
   globalSetup: require.resolve('./tests/setup/global-setup.js'), // handles shared auth caching
 
   use: {
-    baseURL: process.env.BASE_URL || 'https://192.168.10.30:700', // Default base URL
+    baseURL: process.env.BASE_URL || 'https://main.ordiss.dev.thinkventory.com', // Default base URL
     headless: process.env.HEADLESS === 'false', // Run tests in headless mode based on env variable | default: false
     screenshot: process.env.SCREENSHOT_MODE || 'only-on-failure', // Capture screenshots on failure | 'on', 'off', 'only-on-failure'
     video: process.env.VIDEO_MODE || 'retain-on-failure', // Record videos on failure

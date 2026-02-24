@@ -1,6 +1,6 @@
 // tests/login.spec.js
 const { test, expect } = require('@playwright/test');
-const { LoginPage } = require('../pages/auth/login.page');
+const LoginPage = require('../pages/auth/login.page');
 
 test.describe('Login Functionality', () => {
   test.beforeEach(async ({ page }) => {
@@ -11,7 +11,7 @@ test.describe('Login Functionality', () => {
     const loginPage = new LoginPage(page);
     await loginPage.login(
       process.env.VALID_USERNAME,
-      process.env.VALID_PASSWORD
+      process.env.VALID_PASSWORD,
     );
     await expect(page).toHaveURL(/\/dashboard/);
   });
@@ -25,7 +25,7 @@ test.describe('Login Functionality', () => {
 
     await expect(loginPage.errorMessage).toBeVisible();
     await expect(loginPage.errorMessage).toContainText(
-      'Invalid username or password'
+      'Invalid username or password',
     );
   });
 });
